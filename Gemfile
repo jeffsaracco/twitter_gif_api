@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-gem 'sinatra', git: 'git@github.com:sinatra/sinatra.git'
+gem 'sinatra', github: 'sinatra/sinatra'
 gem 'json'
 
 gem 'nokogiri'
