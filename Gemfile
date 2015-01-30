@@ -4,6 +4,7 @@ gem 'json'
 
 gem 'nokogiri'
 gem 'rmagick'
+gem 'imgur-api'
 
 group :development do
   gem 'guard-shotgun', github: 'rchampourlier/guard-shotgun'

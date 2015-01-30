@@ -1,24 +1,22 @@
 require 'open-uri'
+require 'imgur'
 
 class Scraper
 
   attr_reader :file
+  attr_reader :imgur_link
 
   def initialize(url)
     response = open(url).read
     doc = Nokogiri::HTML(response)
 
     src       = doc.at_css("video source").attr('video-src')
-    # binding.pry
 
     basename  = URI(src).path.gsub('/tweet_video/', '')
-    # binding.pry
     folder    = "tmp/#{basename.gsub(/\.mp4$/, '')}"
-    # binding.pry
 
     `mkdir -p tmp`
     `curl -s "#{src}" -o "tmp/#{basename}"`
-    # binding.pry
 
     #folder for images
     `mkdir -p #{folder}`
@@ -37,5 +35,16 @@ class Scraper
     `rm -rf #{folder}.mp4`
 
     @file = "#{folder}.gif"
+
+    send_to_imgur
+  end
+
+  private
+
+  def send_to_imgur
+    client = Imgur.new('a13c4fe4af19853')
+    image = Imgur::LocalImage.new(@file)
+    uploaded = client.upload(image)
+    @imgur_link = uploaded.link
   end
 end

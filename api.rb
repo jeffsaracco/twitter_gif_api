@@ -8,12 +8,15 @@ get '/' do
 end
 
 get '/convert' do
-  file = Scraper.new(params[:url]).file
-  gif = File.open(file)
+  content_type :json
 
-  # `rm -rf #{file}`
+  twitter_url = params[:url]
 
-  send_file gif
+  if twitter_url
+    convert_image(twitter_url)
+  else
+    {error: 'parameter :url missing'}
+  end
 end
 
 post '/convert' do
@@ -22,13 +25,21 @@ post '/convert' do
   twitter_url = params[:url]
 
   if twitter_url
-    file = Scraper.new(params[:url]).file
-    gif = File.open(file)
-
-    # `rm -rf #{file}`
-
-    send_file gif
+    convert_image(twitter_url)
   else
     {error: 'parameter :url missing'}
   end
+end
+
+def convert_image(url)
+  scraper = Scraper.new(url)
+  gif = File.open(scraper.file)
+  imgur_link = scraper.imgur_link
+
+  encoded = Base64.encode64(gif.read).gsub("\n",'')
+
+  {
+    link: imgur_link,
+    data: "data:image/png;base64,#{encoded}",
+  }.to_json
 end
